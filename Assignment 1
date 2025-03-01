@@ -1,0 +1,121 @@
+from datetime import datetime
+
+# -------------------- Customer Class --------------------
+class Customer:
+    def __init__(self, customer_id, name, email, phone, address):
+        self.__customer_id = customer_id
+        self.__name = name
+        self.__email = email
+        self.__phone = phone
+        self.__address = address
+
+    # Getters
+    def get_customer_id(self): return self.__customer_id
+    def get_name(self): return self.__name
+    def get_email(self): return self.__email
+    def get_address(self): return self.__address
+
+    # Setters
+    def update_email(self, new_email): self.__email = new_email
+    def update_address(self, new_address): self.__address = new_address
+
+# -------------------- Order Class --------------------
+class Order:
+    def __init__(self, order_id, customer):
+        self.__order_id = order_id
+        self.__customer = customer
+        self.__items = []
+        self.__total_weight = 0.0
+        self.__package_dims = []
+
+    def add_item(self, item_name, weight, dimensions):
+        self.__items.append(item_name)
+        self.__total_weight += weight
+        self.__package_dims.append(dimensions)
+    
+    # Getters
+    def get_order_id(self): return self.__order_id
+    def get_total_weight(self): return self.__total_weight
+    def get_package_dims(self): return self.__package_dims
+
+    def calculate_tax(self):
+        """Calculate applicable taxes for the order (stub)."""
+        pass
+
+# -------------------- Delivery Class --------------------
+class Delivery:
+    def __init__(self, delivery_id, method, date):
+        self.__delivery_id = delivery_id
+        self.__method = method
+        self.__date = date
+        self.__status = "Processing"
+        self.__driver = ""
+
+    def update_status(self, new_status): self.__status = new_status
+    def assign_driver(self, driver): self.__driver = driver
+    
+    # Getters
+    def get_delivery_id(self): return self.__delivery_id
+    def get_method(self): return self.__method
+    def get_date(self): return self.__date
+
+    def estimate_delivery_time(self):
+        """Predict delivery ETA based on location (stub)."""
+        pass
+
+# -------------------- DeliveryNote Class --------------------
+class DeliveryNote:
+    def __init__(self, note_id, order, delivery):
+        self.__note_id = note_id
+        self.__order = order
+        self.__delivery = delivery
+        self.__content = ""
+        self.__issue_date = datetime.now().strftime("%Y-%m-%d")
+
+    def generate_content(self):
+        customer = self.__order.get_customer()
+        self.__content = f"""
+        DELIVERY NOTE: {self.__note_id}
+        =================================
+        Order Number: {self.__order.get_order_id()}
+        Reference Number: {self.__delivery.get_delivery_id()}
+        Delivery Date: {self.__delivery.get_date()}
+        Delivery Method: {self.__delivery.get_method()}
+        Total Weight: {self.__order.get_total_weight()} kg
+        Package Dimensions: {', '.join(self.__order.get_package_dims())}
+
+        Recipient Details:
+        Name: {customer.get_name()}
+        Email: {customer.get_email()}
+        Address: {customer.get_address()}
+
+        Thank you for using our delivery service! 
+        Please present this note upon receiving your items.
+        """
+    
+    def display_note(self): print(self.__content)
+
+    def save_to_pdf(self):
+        """Export delivery note as a PDF file (stub)."""
+        pass
+
+# -------------------- Example Usage --------------------
+# Create customer
+customer = Customer("CUST-789", "Sarah Johnson", 
+                   "sarah.johnson@example.com", "+971-55-123-4567", 
+                   "45 Knowledge Avenue, Dubai, UAE")
+
+# Create order and add items
+order = Order("DEL123456789", customer)
+order.add_item("Books", 3.5, "30x20x5cm")
+order.add_item("Electronics", 3.5, "40x30x15cm")
+
+# Configure delivery
+delivery = Delivery("DN-2025-001", "Courier", "January 25, 2025")
+delivery.assign_driver("Ahmed Al-Maktoum")
+delivery.update_status("Out for Delivery")
+
+# Generate and display note
+delivery_note = DeliveryNote("DN-2025-001", order, delivery)
+delivery_note.generate_content()
+delivery_note.display_note()
